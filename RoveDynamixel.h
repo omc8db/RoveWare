@@ -79,24 +79,30 @@
 
 #define TXDELAY 2000
 
-typedef enum {
+typedef enum 
+{
   AX,
   MX
-} DynamixelType;
+} RoveDynamixelType;
 
-typedef enum {
+typedef enum 
+{
   Wheel = 0,
   Joint = 1,
   MultiTurn = 2
-} DynamixelMode;
+} RoveDynamixelMode;
 
-typedef struct {
+typedef struct 
+{
   uint8_t id;
-  DynamixelType type;
-  roveUART_Handle uart;
-} Dynamixel;
+  RoveDynamixelType type;
+  RoveUART_Handle uart;
+} RoveDynamixel;
 
-typedef enum {
+typedef struct RoveDynamixel *RoveDynamixelHandle;
+
+typedef enum 
+{
   DYNAMIXEL_ERROR_SUCCESS = 0,
   DYNAMIXEL_ERROR_VOLTAGE = 1,
   DYNAMIXEL_ERROR_ANGLE_LIMIT = 2,
@@ -105,33 +111,36 @@ typedef enum {
   DYNAMIXEL_ERROR_CHECKSUM = 16,
   DYNAMIXEL_ERROR_OVERLOAD = 32,
   DYNAMIXEL_ERROR_UNKNOWN = 64
-} Dynamixel_Error;
+} RoveDynamixelError;
 
-void DynamixelInit(Dynamixel* dyna, DynamixelType type, uint8_t id, uint8_t uartIndex, int baud);
+void RoveDynamixel_init(RoveDynamixelHandle dyna, rove_dynamixel_type type, uint8_t id, uint8_t uart_index, int baud);
 
-void DynamixelSendPacket(Dynamixel dyna, uint8_t length, uint8_t* instruction);
-uint8_t DynamixelGetReturnPacket(Dynamixel dyna, uint8_t* buffer, size_t bufferSize);
-uint8_t DynamixelGetError(Dynamixel dyna);
+void RoveDynamixel_sendPacket(RoveDynamixel dyna, uint8_t length, uint8_t* instruction);
+uint8_t RoveDynamixel_getReturnPacket(RoveDynamixel dyna, uint8_t* buffer, size_t buffer_size);
+uint8_t RoveDynamixel_getError(RoveDynamixel dyna);
 
-uint8_t DynamixelPing(Dynamixel dyna);
-void DynamixelSendWriteCommand(Dynamixel dyna, uint8_t dynamixelRegister, uint8_t dataLength, uint8_t* data);
-void DynamixelSendReadCommand(Dynamixel dyna, uint8_t dynamixelRegister, uint8_t readLength);
+uint8_t RoveDynamixel_ping(RoveDynamixel dyna);
+void RoveDynamixel_sendWriteCommand(RoveDynamixel dyna, uint8_t dynamixel_register, uint8_t data_length, uint8_t* data);
+void RoveDynamixel_sendReadCommand(RoveDynamixel dyna, uint8_t dynamixel_register, uint8_t read_length);
 
-uint8_t DynamixelRotateJoint(Dynamixel dyna, uint16_t position);
-uint8_t DynamixelSpinWheel(Dynamixel dyna, uint16_t speed);
+uint8_t RoveDynamixel_rotateJoint(RoveDynamixel dyna, uint16_t speed, uint16_t position);
+uint8_t RoveDynamixel_spinWheel(RoveDynamixel dyna, uint16_t speed);
 
-uint8_t DynamixelSetId(Dynamixel* dyna, uint8_t id);
-uint8_t DynamixelSetBaudRate(Dynamixel dyna, uint8_t baudByte);
-uint8_t DynamixelSetReturnDelayTime(Dynamixel dyna, uint8_t returnDelayByte);
-uint8_t DynamixelSetMaxTorque(Dynamixel dyna, uint16_t maxTorque);
-uint8_t DynamixelSetStatusReturnLevel(Dynamixel dyna, uint8_t level);
-uint8_t DynamixelSetMode(Dynamixel dyna, DynamixelMode mode);
+uint8_t RoveDynamixel_setPosition(RoveDynamixel dyna, uint16_t speed);
+uint8_t RoveDynamixel_setSpeed(RoveDynamixel dyna, uint16_t speed);
 
-uint8_t DynamixelGetMode(Dynamixel dyna, DynamixelMode* mode);
-uint8_t DynamixelGetPresentPosition(Dynamixel dyna, uint16_t* pos);
-uint8_t DynamixelGetPresentSpeed(Dynamixel dyna, uint16_t* speed);
-uint8_t DynamixelGetLoad(Dynamixel dyna, uint16_t* load);
-uint8_t DynamixelGetVoltage(Dynamixel dyna, uint8_t* voltage);
-uint8_t DynamixelGetTemperature(Dynamixel dyna, uint8_t* temp);
+uint8_t RoveDynamixel_setId(RoveDynamixelHandle dyna, uint8_t id);
+uint8_t RoveDynamixel_setBaudRate(RoveDynamixel dyna, uint8_t baud_byte);
+uint8_t RoveDynamixel_setReturnDelayTime(RoveDynamixel dyna, uint8_t return_delay_byte);
+uint8_t RoveDynamixel_setMaxTorque(RoveDynamixel dyna, uint16_t max_torque);
+uint8_t RoveDynamixel_setStatusReturnLevel(RoveDynamixel dyna, uint8_t level);
+uint8_t RoveDynamixel_setMode(RoveDynamixel dyna, RoveDynamixelMode mode);
+
+uint8_t RoveDynamixel_getMode(RoveDynamixel dyna, RoveDynamixelMode* mode);
+uint8_t RoveDynamixel_getPresentPosition(RoveDynamixel dyna, uint16_t* pos);
+uint8_t RoveDynamixel_getPresentSpeed(RoveDynamixel dyna, uint16_t* speed);
+uint8_t RoveDynamixel_getLoad(RoveDynamixel dyna, uint16_t* load);
+uint8_t RoveDynamixel_getVoltage(RoveDynamixel dyna, uint8_t* voltage);
+uint8_t RoveDynamixel_getTemperature(RoveDynamixel dyna, uint8_t* temp);
 
 #endif
