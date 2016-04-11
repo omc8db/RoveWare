@@ -113,7 +113,7 @@ typedef enum
   DYNAMIXEL_ERROR_UNKNOWN = 64
 } RoveDynamixelError;
 
-void RoveDynamixel_init(RoveDynamixelHandle dyna, rove_dynamixel_type type, uint8_t id, uint8_t uart_index, int baud);
+void RoveDynamixel_begin(RoveDynamixel* dyna, RoveDynamixelType type, uint8_t id, uint8_t uart_index, int baud);
 
 void RoveDynamixel_sendPacket(RoveDynamixel dyna, uint8_t length, uint8_t* instruction);
 uint8_t RoveDynamixel_getReturnPacket(RoveDynamixel dyna, uint8_t* buffer, size_t buffer_size);
@@ -126,7 +126,7 @@ void RoveDynamixel_sendReadCommand(RoveDynamixel dyna, uint8_t dynamixel_registe
 uint8_t RoveDynamixel_rotateJoint(RoveDynamixel dyna, uint16_t speed, uint16_t position);
 uint8_t RoveDynamixel_spinWheel(RoveDynamixel dyna, uint16_t speed);
 
-uint8_t RoveDynamixel_setPosition(RoveDynamixel dyna, uint16_t speed);
+uint8_t RoveDynamixel_setPosition(RoveDynamixel dyna, uint16_t position);
 uint8_t RoveDynamixel_setSpeed(RoveDynamixel dyna, uint16_t speed);
 
 uint8_t RoveDynamixel_setId(RoveDynamixelHandle dyna, uint8_t id);

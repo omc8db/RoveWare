@@ -5,7 +5,8 @@
 
 //BEGIN PUBLIC API
 
-void RoveDynamixel_begin(RoveDynamixel* dyna, RoveDynamixelType type, uint8_t id, uint8_t uart_index, int baud) {
+void RoveDynamixel_begin(RoveDynamixel* dyna, RoveDynamixelType type, uint8_t id, uint8_t uart_index, int baud) 
+{
   dyna -> type = type;
   dyna -> id = id;
   dyna -> uart = RoveBoard_UART_open(uart_index, baud);
@@ -15,12 +16,17 @@ uint8_t RoveDynamixel_spinWheel(RoveDynamixel dyna, uint16_t speed)
 {
   return RoveDynamixel_setSpeed(RoveDynamixel dyna, uint16_t speed)
 }
-
-/*TODO GBENGA
 uint8_t RoveDynamixel_rotateJoint(RoveDynamixel dyna, uint16_t angle, uint16_t speed) 
 {
+  uint8_t error;
+
+  error = RoveDynamixel_setPosition(dyna, angle);
+  error |= RoveDynamixel_setSpeed(dyna, speed);
+
   return DYNAMIXEL_ERROR_UNKNOWN;
 }
+
+/*TODO GBENGA
 
 RoveDynamixel_readWheel(RoveDynamixel dyna, uint16_t* speed, uint16_t* load)
 {
@@ -43,12 +49,14 @@ RoveDynamixel_readConfig(RoveDynamixel dyna, uint16_t* max_torque, uint16_t* lev
 
 //END PUBLIC API
 
-void RoveDynamixel_sendPacket(RoveDynamixel dyna, uint8_t length, uint8_t* instruction) {
+void RoveDynamixel_sendPacket(RoveDynamixel dyna, uint8_t length, uint8_t* instruction) 
+{
   int i;
   uint8_t checksum;
   
   checksum = dyna.id + (length + 1);
-  for(i=0; i < length; i++) {
+  for(i=0; i < length; i++) 
+  {
     checksum += instruction[i];
   }
   checksum = ~checksum;
@@ -67,23 +75,28 @@ void RoveDynamixel_sendPacket(RoveDynamixel dyna, uint8_t length, uint8_t* instr
   RoveBoardUART_read(dyna.uart, NULL, length + 5);
 }
 
-uint8_t RoveDynamixel_getReturnPacket(Dynamixel dyna, uint8_t* data, size_t data_size) {
+uint8_t RoveDynamixel_getReturnPacket(Dynamixel dyna, uint8_t* data, size_t data_size) 
+{
   // To be fixed
   uint8_t id, length, error;
   uint8_t temp1, temp2;
   
   
-  if(RoveBoard_UART_available(dyna.uart) == true){
+  if(RoveBoard_UART_available(dyna.uart) == true)
+  {
     RoveBoard_UART_read(dyna.uart, &temp2, 1);
     
-    while(RoveBoard_UART_available(dyna.uart) == true) { 
+    while(RoveBoard_UART_available(dyna.uart) == true) 
+    { 
       temp1 = temp2;
       RoveBoard_UART_read(dyna.uart, &temp2, 1);
-      if (temp1 == 255 && temp2 == 255) {
+      if (temp1 == 255 && temp2 == 255) 
+      {
         RoveBoard_UART_read(dyna.uart, &id, 1);
         RoveBoard_UART_read(dyna.uart, &length, 1);
         RoveBoard_UART_read(dyna.uart, &error, 1);
-        if (dataSize + 2 != length) {
+        if (dataSize + 2 != length) 
+        {
           RoveBoard_UART_read(dyna.uart, NULL, length-2);
           return (error & DYNAMIXEL_ERROR_UNKNOWN);
         } else {
@@ -97,11 +110,13 @@ uint8_t RoveDynamixel_getReturnPacket(Dynamixel dyna, uint8_t* data, size_t data
   return DYNAMIXEL_ERROR_UNKNOWN;
 }
 
-uint8_t RoveDynamixel_getError(RoveDynamixel dyna) {
+uint8_t RoveDynamixel_getError(RoveDynamixel dyna) 
+{
   return RoveDynamixel_getReturnPacket(dyna, NULL, 0);
 }
 
-uint8_t RoveDynamixel_ping(RoveDynamixel dyna) {
+uint8_t RoveDynamixel_ping(RoveDynamixel dyna) 
+{
   uint8_t msg_length = 1;
   uint8_t data = DYNAMIXEL_PING;
   
@@ -110,7 +125,8 @@ uint8_t RoveDynamixel_ping(RoveDynamixel dyna) {
   return RoveDynamixel_getError(dyna);
 }
 
-void RoveDynamixel_sendWriteCommand(RoveDynamixel dyna, uint8_t dynamixel_register, uint8_t data_length, uint8_t* data) {
+void RoveDynamixel_sendWriteCommand(RoveDynamixel dyna, uint8_t dynamixel_register, uint8_t data_length, uint8_t* data) 
+{
   uint8_t buffer[dataLength + 2];
 
   buffer[0] = DYNAMIXEL_WRITE_DATA;
@@ -120,7 +136,8 @@ void RoveDynamixel_sendWriteCommand(RoveDynamixel dyna, uint8_t dynamixel_regist
   DynamixelSendPacket(dyna, dataLength + 2, buffer);
 }
 
-void Dynamixel_sendReadCommand(Dynamixel dyna, uint8_t dynamixel_register, uint8_t read_length) {
+void Dynamixel_sendReadCommand(Dynamixel dyna, uint8_t dynamixel_register, uint8_t read_length) 
+{
   uint8_t buffer[3];
 
   buffer[0] = DYNAMIXEL_READ_DATA;
@@ -135,8 +152,6 @@ uint8_t RoveDynamixel_setPosition(RoveDynamixel dyna, uint16_t position)
   uint8_t msg_length = 2;
   uint8_t data[msg_length];
   
-  //data[0] = DYNAMIXEL_WRITE_DATA;
-  //data[1] = DYNAMIXEL_GOAL_POSITION_L;
   data[0] = position & 0x00FF;
   data[1] = position >> 8;
   
@@ -232,12 +247,12 @@ uint8_t RoveDynamixel_setMode(RoveDynamixel dyna, RoveDynamixelMode mode)
       break;
     case Joint:
       if (dyna.type == MX) 
-	  {
+      {
         ccw_high_byte = 0xFF & MX_HIGH_BYTE_MASK;
       }
       
       if (dyna.type == AX) 
-	  {
+      {
         ccw_high_byte = 0xFF & AX_HIGH_BYTE_MASK;
       }
       
@@ -248,12 +263,12 @@ uint8_t RoveDynamixel_setMode(RoveDynamixel dyna, RoveDynamixelMode mode)
       break;
     case MultiTurn:
       if (dyna.type == AX)
-	  {
+      {
         return DYNAMIXEL_ERROR_UNKNOWN;
-	  }
+      }
       
       if (dyna.type == MX) 
-	  {
+      {
         ccw_high_byte = 0xFF & MX_HIGH_BYTE_MASK;
       }
       
@@ -293,20 +308,21 @@ uint8_t RoveDynamixel_getMode(RoveDynamixel dyna, RoveDynamixelMode* mode)
     *mode = Wheel;
   }
   
-  switch (dyna.type) {
+  switch (dyna.type) 
+  {
     case AX:
       if (cw_angle_limitt == 0 && ccw_angle_limit == 0x03FF) 
-	  {
+      {
         *mode = Joint;
       }
       break;
     case MX:
       if (cw_angle_limit == 0 && ccw_angle_limit == 0x0FFF) 
-	  {
+      {
         *mode = Joint;
       }
       if (cw_angle_limit == 0x0FFF && ccw_angle_limit == 0x0FFF) 
-	  {
+      {
         *mode = MultiTurn;
       }
   }
