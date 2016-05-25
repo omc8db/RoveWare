@@ -38,30 +38,32 @@ uint8_t DynamixelGetReturnPacket(Dynamixel dyna, uint8_t* data, size_t dataSize)
   // To be fixed
   uint8_t id, length, error = 0;
   uint8_t temp1, temp2;
-  
+  while(roveBoard_UART_available(dyna.uart) == true)
+    roveBoard_UART_read(dyna.uart, NULL, 1);
+  return 0;
   
   if(roveBoard_UART_available(dyna.uart) == true){
     roveBoard_UART_read(dyna.uart, &temp2, 1);
     
     while(roveBoard_UART_available(dyna.uart) == true) { 
-      temp1 = temp2;
+      temp1 = temp2;Serial.println("Check");
       roveBoard_UART_read(dyna.uart, &temp2, 1);
       if (temp1 == 255 && temp2 == 255) {
         if(roveBoard_UART_available(dyna.uart) == true)
           roveBoard_UART_read(dyna.uart, &id, 1); 
-        else return DYNAMIXEL_ERROR_UNKNOWN;
+        else return DYNAMIXEL_ERROR_UNKNOWN;Serial.println("ID");
         if(roveBoard_UART_available(dyna.uart) == true)
           roveBoard_UART_read(dyna.uart, &length, 1); 
-        else return DYNAMIXEL_ERROR_UNKNOWN;
+        else return DYNAMIXEL_ERROR_UNKNOWN;Serial.println("Length");
         if (length > 0 && roveBoard_UART_available(dyna.uart) == true)
           roveBoard_UART_read(dyna.uart, &error, 1); 
-        else return DYNAMIXEL_ERROR_UNKNOWN;
-        if (dataSize + 2 != length) {
+        else return DYNAMIXEL_ERROR_UNKNOWN;Serial.println("Error");
+        if (dataSize + 2 != length) {Serial.println("Bad");
           //roveBoard_UART_read(dyna.uart, NULL, length-2);
           return (error & DYNAMIXEL_ERROR_UNKNOWN);
-        } else {
+        } else {Serial.println("Good");
           roveBoard_UART_read(dyna.uart, data, length-2);
-          roveBoard_UART_read(dyna.uart, NULL, 1);
+          roveBoard_UART_read(dyna.uart, NULL, 1);Serial.println("End");
           return error;
         }
       }
